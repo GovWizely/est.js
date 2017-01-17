@@ -1,0 +1,69 @@
+{% raw %}
+<h2>Results</h2>
+
+<div id="estIssues">
+  <h3>Issues</h3>
+  <div class="estCard">
+    <ul>
+    {{#issues}}
+      <li>
+        <h4>{{name}}</h4>
+        <p>{{abstract}}</p>
+        <ul>
+          {{#links}}
+          <li>
+            <a href="{{url}}">{{link_name}}</a>
+          </li>
+          {{/links}}
+        </ul>
+      </li>
+    {{/issues}}
+    </ul>
+  </div>
+</div>
+
+<div id="estRegulations">
+  <h3>Regulations</h3>
+  <div class="estCard">
+    <ul>
+      {{#regulations}}
+      <li>
+        <a href="{{url}}">{{name}}</a>
+      </li>
+      {{/regulations}}
+    </ul>
+  </div>
+</div>
+
+<div id="estSolutionsProviders">
+  <h3>Solutions and Providers</h3>
+  <div class="estCard">
+    <div class="estCardBody">
+      <table>
+        <thead>
+          <tr>
+            <th>Solutions</th>
+            <th>Providers</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#solutions}}
+          <tr>
+            <td>{{name}}</td>
+            <td>
+              <ul>
+              {{#urls}}
+                <li>
+                  <a href="{{url}}">{{provider_name}}</a>
+                </li>
+              {{/urls}}
+              </ul>
+            </td>
+          </tr>
+        {{/solutions}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endraw %}

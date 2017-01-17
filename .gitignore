@@ -1,0 +1,6 @@
+.bundle
+.ruby-version
+_site
+.sass-cache
+/spec/examples.txt
+.jekyll-metadata
