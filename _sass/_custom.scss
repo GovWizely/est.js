@@ -4,107 +4,122 @@
  *
  */
 
-#content {
+.estContent {
+  @import "custom_bootstrap";
+
+  // Body reset
+  font-size: 10px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $text-color;
+  background-color: $body-bg;
+
   font-family: 'Lato', sans-serif;
   font-weight: 400;
   @extend .container-fluid;
-}
+  @include clearfix;
 
-#est, #estResults {
-  @include make-xs-column(12);
-  @include make-sm-column(12);
-  @include make-md-column-offset(1);
-  @include make-md-column(10);
-  @include make-lg-column-offset(2);
-  @include make-lg-column(8);
-}
-
-$est-content-font-weight: 300;
-
-#est {
-  form > div {
-    @extend .form-group;
+  #est, #estResults {
+    @include make-xs-column(12);
+    @include make-sm-column(12);
+    @include make-md-column-offset(1);
+    @include make-md-column(10);
+    @include make-lg-column-offset(2);
+    @include make-lg-column(8);
   }
 
-  label > span {
-    font-weight: $est-content-font-weight;
-  }
+  $est-content-font-weight: 300;
 
-  select {
-    @extend .form-control;
-  }
-
-  #estReset {
-    @extend .btn;
-    @extend .btn-default;
-  }
-}
-
-.estCard {
-  @extend .panel;
-  @extend .panel-default;
-
-  .estCardHeading {
-    @extend .panel-heading;
-  }
-
-  .estCardBody {
-    @extend .panel-body;
-    font-weight: $est-content-font-weight;
-  }
-
-  > ul {
-    @extend .list-group;
-    font-weight: $est-content-font-weight;
-
-    > li {
-      @extend .list-group-item;
-
-      > ul {
-        @extend .list-unstyled;
-      }
+  #est {
+    form > div {
+      @extend .form-group;
     }
 
-    &:first-child {
-      > li:first-child {
-        border-top: 0px;
+    label {
+      font-weight: 400;
+    }
+
+    label > span {
+      font-weight: $est-content-font-weight;
+    }
+
+    select {
+      @extend .form-control;
+    }
+
+    #estReset {
+      @extend .btn;
+      @extend .btn-default;
+    }
+  }
+
+  .estCard {
+    @extend .panel;
+    @extend .panel-default;
+
+    .estCardHeading {
+      @extend .panel-heading;
+    }
+
+    .estCardBody {
+      @extend .panel-body;
+      font-weight: $est-content-font-weight;
+    }
+
+    > ul {
+      @extend .list-group;
+      font-weight: $est-content-font-weight;
+
+      > li {
+        @extend .list-group-item;
+
+        > ul {
+          @extend .list-unstyled;
+        }
       }
-      > li:last-child {
-        border-bottom: 0px;
+
+      &:first-child {
+        > li:first-child {
+          border-top: 0px;
+        }
+        > li:last-child {
+          border-bottom: 0px;
+        }
       }
     }
   }
-}
 
-#estResults {
-  @extend .panel-group;
+  #estResults {
+    @extend .panel-group;
 
-  h2 {
-    @extend .text-hide;
-  }
+    h2 {
+      @extend .text-hide;
+    }
 
-  #estSolutionsProviders {
-    table {
-      @extend .table;
-      @extend .table-condensed;
-      table-layout: fixed;
-      margin-bottom: 0;
+    #estSolutionsProviders {
+      table {
+        @extend .table;
+        @extend .table-condensed;
+        table-layout: fixed;
+        margin-bottom: 0;
 
-      > thead, > tbody {
-        > tr {
-          > th, > td {
-            padding-left: 0;
-            padding-right: 0;
-            width: 50%;
+        > thead, > tbody {
+          > tr {
+            > th, > td {
+              padding-left: 0;
+              padding-right: 0;
+              width: 50%;
+            }
+
           }
 
         }
-
       }
-    }
 
-    ul {
-      @extend .list-unstyled;
+      ul {
+        @extend .list-unstyled;
+      }
     }
   }
 }

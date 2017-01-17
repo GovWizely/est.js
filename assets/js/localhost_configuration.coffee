@@ -2,7 +2,7 @@
 ---
 
 jQuery ->
-  $('#content').setupEST
+  $('#estContent').setupEST
     apiKey: 'devkey',
     scheme: 'http',
     host: 'localhost:3000'
