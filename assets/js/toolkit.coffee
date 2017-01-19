@@ -9,6 +9,7 @@ class window.EST.Toolkit
   @DEFAULT_EASING = 300
 
   constructor: (element, @options) ->
+    @pathname = window.location.pathname
     template = """{% include_relative templates/main.html %}"""
     $(element).append template
     filterTypes = ['issue', 'regulation', 'solution', 'provider']
@@ -33,13 +34,12 @@ class window.EST.Toolkit
     $('#estReset').on 'click', (e) ->
       e.preventDefault()
       filter.setSelectedId({}) for filter in toolkit.filters
-      paramString = $.param {id: (new Date()).getTime()}
-      History.pushState null, 'Environmental Solutions Toolkit', "?#{paramString}"
+      History.pushState null, 'Environmental Solutions Toolkit', "#{toolkit.pathname}"
 
   pushNextPage: ->
     selectedParams = this.getSelectedFilters()
     paramString = $.param selectedParams
-    History.pushState null, 'Environmental Solutions Toolkit', "?#{paramString}"
+    History.pushState null, 'Environmental Solutions Toolkit', "#{@pathname}?#{paramString}"
 
   loadPage: ->
     urlParams = this.paramStringToObject()
@@ -72,7 +72,7 @@ class window.EST.Toolkit
         $('#estResults').hide
           duration: toolkit.constructor.DEFAULT_EASING,
           done: ->
-            $(this).empty()
+            toolkit.showDisclaimer()
             toolkit.enable()
 
   disable: ->
@@ -127,3 +127,8 @@ class window.EST.Toolkit
 
     for solution in @filters[2].getSelectedResults()
       name: solution.name, urls: urlsByProviderId[solution.solution_id]
+
+  showDisclaimer: ->
+    @disclaimerContent ?= """{% include_relative templates/disclaimer.html %}"""
+    $('#estResults').html(@disclaimerContent).show(@constructor.DEFAULT_EASING)
+    this.enable()

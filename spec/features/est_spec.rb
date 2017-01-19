@@ -2,34 +2,34 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when visiting est page without parameter' do
     before do
       visit '/production.html'
-      find_field 'Issues (12)'
+      find_field 'Environmental Issue (12)'
     end
 
     it 'renders all filters' do
       within '#est' do
-        expect(page).to have_select 'Issues (12)',
-                                    selected: 'Select an issue',
+        expect(page).to have_select 'Environmental Issue (12)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'Arsenic Remediation in Drinking Water',
                                       'Universal Waste'
                                     ]
 
-        expect(page).to have_select 'Regulations (12)',
-                                    selected: 'Select a regulation',
+        expect(page).to have_select 'EPA Regulation (12)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'Clean Water Act',
                                       'Standards of Performance for New Stationary Sources: Oil and Gas'
                                     ]
 
-        expect(page).to have_select 'Solutions (95)',
-                                    selected: 'Select a solution',
+        expect(page).to have_select 'Solution (95)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'Absorption Towers',
                                       'Thickening Technology or Processes'
                                     ]
 
-        expect(page).to have_select 'Providers (89)',
-                                    selected: 'Select a provider',
+        expect(page).to have_select 'U.S. Solution Provider (89)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'ABCOV',
                                       'ZAPS Technologies, Inc.'
@@ -41,8 +41,8 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when selecting an issue' do
     before do
       visit '/production.html'
-      page.select 'Universal Waste', from: 'Issues (12)'
-      find_field 'Regulations (1)'
+      page.select 'Universal Waste', from: 'Environmental Issue (12)'
+      find_field 'EPA Regulation (1)'
     end
 
     it 'updates the page title and URL' do
@@ -52,25 +52,25 @@ RSpec.describe 'est', type: :feature, js: true do
 
     it 'filters select boxes' do
       within '#est' do
-        expect(page).to have_select 'Issues (12)',
+        expect(page).to have_select 'Environmental Issue (12)',
                                     selected: 'Universal Waste',
                                     with_options: [
                                       'Arsenic Remediation in Drinking Water',
                                       'Universal Waste'
                                     ]
 
-        expect(page).to have_select 'Regulations (1)',
+        expect(page).to have_select 'EPA Regulation (1)',
                                     selected: 'Standards for Universal Waste Management'
 
-        expect(page).to have_select 'Solutions (4)',
-                                    selected: 'Select a solution',
+        expect(page).to have_select 'Solution (4)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'CRT Recycling Technology',
                                       'Related Technologies for Standards for Universal Waste Management: Universal Waste'
                                     ]
 
-        expect(page).to have_select 'Providers (5)',
-                                    selected: 'Select a provider',
+        expect(page).to have_select 'U.S. Solution Provider (5)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'ABCOV',
                                       'LoadMan On-Board Weight Scales and Systems'
@@ -106,33 +106,33 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when visiting a page with a predefined filter' do
     before do
       visit '/production.html?provider_ids=11'
-      find_field 'Issues (4)'
+      find_field 'Environmental Issue (4)'
     end
 
     it 'filters select boxes' do
       within '#est' do
-        expect(page).to have_select 'Issues (4)',
-                                    selected: 'Select an issue',
+        expect(page).to have_select 'Environmental Issue (4)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'Groundwater Remediation',
                                       'Secondary or Advanced Wastewater Treatment'
                                     ]
 
-        expect(page).to have_select 'Regulations (4)',
-                                    selected: 'Select a regulation',
+        expect(page).to have_select 'EPA Regulation (4)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'Clean Water Act',
                                       'Standards of Performance for New Stationary Sources: Landfills and Municipal Waste'
                                     ]
 
-        expect(page).to have_select 'Solutions (4)',
-                                    selected: 'Select a solution',
+        expect(page).to have_select 'Solution (4)',
+                                    selected: 'Select an option',
                                     with_options: [
                                       'Landfill Groundwater Monitoring',
                                       'Related Technologies for Clean Water Act: Groundwater Remediation'
                                     ]
 
-        expect(page).to have_select 'Providers (89)',
+        expect(page).to have_select 'U.S. Solution Provider (89)',
                                     selected: 'ANDalyze',
                                     with_options: [
                                       'ABCOV',
@@ -174,17 +174,17 @@ RSpec.describe 'est', type: :feature, js: true do
     end
   end
 
-  context 'when using the reset button' do
+  context 'when using the Clear button' do
     before do
       visit '/production.html?provider_ids=11'
       find :xpath, ".//div[@id='estIssues']//h4[text()='Groundwater Remediation']"
 
-      click_on 'Reset'
-      find_field 'Issues (12)'
+      click_on 'Clear'
+      find_field 'Environmental Issue (12)'
     end
 
-    it 'empties the results' do
-      expect(find_by_id('estResults', visible: false).text).to be_empty
+    it 'shows disclaimer' do
+      expect(find_by_id('estDisclaimer').text).to include('Disclaimer')
     end
   end
 
@@ -193,7 +193,7 @@ RSpec.describe 'est', type: :feature, js: true do
       visit '/production.html?provider_ids=11'
       find :xpath, ".//div[@id='estIssues']//h4[text()='Groundwater Remediation']"
 
-      page.select 'ABCOV', from: 'Providers (89)'
+      page.select 'ABCOV', from: 'U.S. Solution Provider (89)'
       find :xpath, ".//div[@id='estIssues']//h4[text()='Universal Waste']"
 
       page.evaluate_script 'window.history.back()'

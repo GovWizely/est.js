@@ -92,6 +92,7 @@
 
   #estResults {
     @extend .panel-group;
+    font-weight: $est-content-font-weight;
 
     h2 {
       @extend .text-hide;

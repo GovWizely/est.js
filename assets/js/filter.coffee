@@ -9,7 +9,8 @@ class window.EST.Filter
   @KEYS = ['issue_ids', 'regulation_ids', 'solution_ids', 'provider_ids']
 
   constructor: (@toolkit, @filterType, @options) ->
-    @defaultOptionText = if @filterType == 'issue' then 'Select an issue' else "Select a #{@filterType}"
+#    @defaultOptionText = if @filterType == 'issue' then 'Select an issue' else "Select a #{@filterType}"
+    @defaultOptionText = 'Select an option'
     @selector = "##{@filterType}sSelect"
     @parameterKey = "#{@filterType}_ids"
     @$this = $(@selector)

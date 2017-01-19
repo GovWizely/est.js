@@ -1,7 +1,5 @@
 require_relative '../../lib/est'
 
-RSpec.configure do |config|
-  config.before(:suite) do
-    EST.build Pathname.new(File.expand_path('../../../', __FILE__))
-  end
-end
+puts 'Building est.min.js'
+`bundle exec jekyll build`
+EST.build Pathname.new(File.expand_path('../../../', __FILE__))
