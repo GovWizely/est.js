@@ -2,33 +2,33 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when visiting est page without parameter' do
     before do
       visit '/production.html'
-      find_field 'Environmental Issue (12)'
+      find_field 'Environmental Issue'
     end
 
     it 'renders all filters' do
       within '#est' do
-        expect(page).to have_select 'Environmental Issue (12)',
+        expect(page).to have_select 'Environmental Issue',
                                     selected: 'Select an option',
                                     with_options: [
                                       'Arsenic Remediation in Drinking Water',
                                       'Universal Waste'
                                     ]
 
-        expect(page).to have_select 'EPA Regulation (12)',
+        expect(page).to have_select 'EPA Regulation',
                                     selected: 'Select an option',
                                     with_options: [
                                       'Clean Water Act',
                                       'Standards of Performance for New Stationary Sources: Oil and Gas'
                                     ]
 
-        expect(page).to have_select 'Solution (95)',
+        expect(page).to have_select 'Solution',
                                     selected: 'Select an option',
                                     with_options: [
                                       'Absorption Towers',
                                       'Thickening Technology or Processes'
                                     ]
 
-        expect(page).to have_select 'U.S. Solution Provider (89)',
+        expect(page).to have_select 'U.S. Solution Provider',
                                     selected: 'Select an option',
                                     with_options: [
                                       'ABCOV',
@@ -41,8 +41,9 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when selecting an issue' do
     before do
       visit '/production.html'
-      page.select 'Universal Waste', from: 'Environmental Issue (12)'
-      find_field 'EPA Regulation (1)'
+      page.select 'Universal Waste', from: 'Environmental Issue'
+      find_field 'EPA Regulation'
+      click_button 'Find Solutions'
     end
 
     it 'updates the page title and URL' do
@@ -52,24 +53,24 @@ RSpec.describe 'est', type: :feature, js: true do
 
     it 'filters select boxes' do
       within '#est' do
-        expect(page).to have_select 'Environmental Issue (12)',
+        expect(page).to have_select 'Environmental Issue',
                                     selected: 'Universal Waste',
                                     with_options: [
                                       'Arsenic Remediation in Drinking Water',
                                       'Universal Waste'
                                     ]
 
-        expect(page).to have_select 'EPA Regulation (1)',
+        expect(page).to have_select 'EPA Regulation',
                                     selected: 'Standards for Universal Waste Management'
 
-        expect(page).to have_select 'Solution (4)',
+        expect(page).to have_select 'Solution',
                                     selected: 'Select an option',
                                     with_options: [
                                       'CRT Recycling Technology',
                                       'Related Technologies for Standards for Universal Waste Management: Universal Waste'
                                     ]
 
-        expect(page).to have_select 'U.S. Solution Provider (5)',
+        expect(page).to have_select 'U.S. Solution Provider',
                                     selected: 'Select an option',
                                     with_options: [
                                       'ABCOV',
@@ -106,33 +107,33 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when visiting a page with a predefined filter' do
     before do
       visit '/production.html?provider_ids=11'
-      find_field 'Environmental Issue (4)'
+      find_field 'Environmental Issue'
     end
 
     it 'filters select boxes' do
       within '#est' do
-        expect(page).to have_select 'Environmental Issue (4)',
+        expect(page).to have_select 'Environmental Issue',
                                     selected: 'Select an option',
                                     with_options: [
                                       'Groundwater Remediation',
                                       'Secondary or Advanced Wastewater Treatment'
                                     ]
 
-        expect(page).to have_select 'EPA Regulation (4)',
+        expect(page).to have_select 'EPA Regulation',
                                     selected: 'Select an option',
                                     with_options: [
                                       'Clean Water Act',
                                       'Standards of Performance for New Stationary Sources: Landfills and Municipal Waste'
                                     ]
 
-        expect(page).to have_select 'Solution (4)',
+        expect(page).to have_select 'Solution',
                                     selected: 'Select an option',
                                     with_options: [
                                       'Landfill Groundwater Monitoring',
                                       'Related Technologies for Clean Water Act: Groundwater Remediation'
                                     ]
 
-        expect(page).to have_select 'U.S. Solution Provider (89)',
+        expect(page).to have_select 'U.S. Solution Provider',
                                     selected: 'ANDalyze',
                                     with_options: [
                                       'ABCOV',
@@ -176,24 +177,29 @@ RSpec.describe 'est', type: :feature, js: true do
 
   context 'when using the Clear button' do
     before do
-      visit '/production.html?provider_ids=11'
+      visit '/production.html?provider_ids=4'
       find :xpath, ".//div[@id='estIssues']//h4[text()='Groundwater Remediation']"
 
       click_on 'Clear'
-      find_field 'Environmental Issue (12)'
+      find_button 'Clear', disabled: true
+      find :xpath, ".//select[@id='issuesSelect']/option[text()='Select an option']"
+      find :xpath, ".//select[@id='regulationsSelect']/option[text()='Select an option']"
+      find :xpath, ".//select[@id='solutionsSelect']/option[text()='Select an option']"
+      find :xpath, ".//select[@id='providersSelect']/option[text()='Select an option']"
     end
 
-    it 'shows disclaimer' do
-      expect(find_by_id('estDisclaimer').text).to include('Disclaimer')
+    it 'shows empty results' do
+      expect(find_by_id('estResults').text).to eq('')
     end
   end
 
   context 'when using the browser history' do
     before do
-      visit '/production.html?provider_ids=11'
+      visit '/production.html?provider_ids=4'
       find :xpath, ".//div[@id='estIssues']//h4[text()='Groundwater Remediation']"
 
-      page.select 'ABCOV', from: 'U.S. Solution Provider (89)'
+      page.select 'ABCOV', from: 'U.S. Solution Provider'
+      find_button('Find Solutions').click
       find :xpath, ".//div[@id='estIssues']//h4[text()='Universal Waste']"
 
       page.evaluate_script 'window.history.back()'

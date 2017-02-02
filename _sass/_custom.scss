@@ -7,6 +7,8 @@
 .estContent {
   @import "custom_bootstrap";
 
+  $est-content-font-weight: 300;
+
   // Body reset
   font-size: 10px;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
@@ -19,40 +21,6 @@
   font-weight: 400;
   @extend .container-fluid;
   @include clearfix;
-
-  #est, #estResults {
-    @include make-xs-column(12);
-    @include make-sm-column(12);
-    @include make-md-column-offset(1);
-    @include make-md-column(10);
-    @include make-lg-column-offset(2);
-    @include make-lg-column(8);
-  }
-
-  $est-content-font-weight: 300;
-
-  #est {
-    form > div {
-      @extend .form-group;
-    }
-
-    label {
-      font-weight: 400;
-    }
-
-    label > span {
-      font-weight: $est-content-font-weight;
-    }
-
-    select {
-      @extend .form-control;
-    }
-
-    #estReset {
-      @extend .btn;
-      @extend .btn-default;
-    }
-  }
 
   .estCard {
     @extend .panel;
@@ -90,6 +58,51 @@
     }
   }
 
+  #estProgressWrapper, #estResultsProgressWrapper {
+    @extend .estCard;
+  }
+
+  #estDisclaimer, #estFormWrapper, #estResults {
+    display: none;
+  }
+
+  #est, #estResults {
+    @include make-xs-column(12);
+    @include make-sm-column(12);
+    @include make-md-column-offset(1);
+    @include make-md-column(10);
+    @include make-lg-column-offset(2);
+    @include make-lg-column(8);
+  }
+
+  #est {
+    form > div {
+      @extend .form-group;
+    }
+
+    label {
+      font-weight: 400;
+    }
+
+    label > span {
+      font-weight: $est-content-font-weight;
+    }
+
+    select {
+      @extend .form-control;
+    }
+
+    #estShowResults {
+      @extend .btn;
+      @extend .btn-primary;
+    }
+
+    #estReset {
+      @extend .btn;
+      @extend .btn-default;
+    }
+  }
+
   #estResults {
     @extend .panel-group;
     font-weight: $est-content-font-weight;
@@ -121,6 +134,18 @@
       ul {
         @extend .list-unstyled;
       }
+    }
+  }
+
+  .estProgress {
+    @extend .progress;
+
+    > div {
+      @extend .progress-bar;
+      @extend .progress-bar-striped;
+      @extend .active;
+      @include clearfix;
+      width: 100%;
     }
   }
 }

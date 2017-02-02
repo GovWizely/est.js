@@ -9,12 +9,10 @@ class window.EST.Filter
   @KEYS = ['issue_ids', 'regulation_ids', 'solution_ids', 'provider_ids']
 
   constructor: (@toolkit, @filterType, @options) ->
-#    @defaultOptionText = if @filterType == 'issue' then 'Select an issue' else "Select a #{@filterType}"
     @defaultOptionText = 'Select an option'
     @selector = "##{@filterType}sSelect"
     @parameterKey = "#{@filterType}_ids"
     @$this = $(@selector)
-    @$countSpan = @$this.prev('label').children('span')
     @filterKeys = this.detectFilterKeys()
     this.setupOnChange()
 
@@ -29,7 +27,8 @@ class window.EST.Filter
     toolkit = @toolkit
     @$this.on 'change', ->
       filter.saveSelected()
-      toolkit.pushNextPage()
+      filter.selectedParamsString = $.param toolkit.getSelectedFilters()
+      toolkit.loadFilterData false
 
   saveSelected: ->
     value = $("#{@selector} option:selected").val()
@@ -37,7 +36,7 @@ class window.EST.Filter
 
   getSelectedObject: ->
     selectedObject = {}
-    selectedId = @getSelectedId()
+    selectedId = this.getSelectedId()
     selectedObject[@parameterKey] = selectedId if selectedId?
     selectedObject
 
@@ -49,15 +48,26 @@ class window.EST.Filter
     selectedId = currentParams[@parameterKey]
     if selectedId then @$this.data('selectedId', selectedId) else @$this.removeData('selectedId')
 
-  loadData: (currentParams) ->
+  loadData: (params) ->
+    paramsString = $.param params
+    if @selectedParamsString == paramsString
+      deferred = $.Deferred()
+      deferred.resolve()
+      return deferred
+    else
+      @selectedParamsString = paramsString
+
+    this.showLoading()
     endpointmeConfig = $.extend {}, @options, path: "/v1/est_#{@filterType}s/search"
     resource = new window.EST.EndpointmeResource endpointmeConfig
 
     filter = this
-    resource.findAll this.buildEndpointmeParams(currentParams), (searchResults) ->
+    resource.findAll this.buildEndpointmeParams(params), (searchResults) ->
       filter.results = searchResults
       filter.renderOptionTags searchResults
-      filter.updateCount searchResults.length
+
+  showLoading: ->
+    @$this.html $('<option />', text: 'Loading ...', val: '')
 
   buildEndpointmeParams: (currentParams) ->
     filterParams = if (@filterType != 'provider') then { lang: 'en' } else {}
@@ -65,9 +75,6 @@ class window.EST.Filter
       value = currentParams[key]
       filterParams[key] = value if value?
     filterParams
-
-  updateCount: (count) ->
-    @$countSpan.text "(#{count})"
 
   renderOptionTags: (results) ->
     selectedId = this.getSelectedId()

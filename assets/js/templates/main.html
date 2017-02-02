@@ -1,29 +1,33 @@
-{% raw %}
 <div id="est">
   <h1>Environmental Solutions Toolkit</h1>
-  <div class="estCard">
+  <div id="estProgressWrapper">
+    {% include_relative templates/loading.html %}
+  </div>
+  {% include_relative templates/disclaimer.html %}
+  <div class="estCard" id="estFormWrapper">
     <div class="estCardBody">
-      <form>
+      <form id="estForm">
         <div>
-          <label for="issuesSelect">Environmental Issue <span /></label>
+          <label for="issuesSelect">Environmental Issue</label>
           <select id="issuesSelect"></select>
         </div>
         <div>
-          <label for="regulationsSelect">EPA Regulation <span /></label>
+          <label for="regulationsSelect">EPA Regulation</label>
           <select id="regulationsSelect"></select>
         </div>
         <div>
-          <label for="solutionsSelect">Solution <span /></label>
+          <label for="solutionsSelect">Solution</label>
           <select id="solutionsSelect"></select>
         </div>
         <div>
-          <label for="providersSelect">U.S. Solution Provider <span /></label>
+          <label for="providersSelect">U.S. Solution Provider</label>
           <select id="providersSelect"></select>
         </div>
+        <input type="submit" value="Find Solutions" id="estShowResults" />
         <input type="button" value="Clear" id="estReset" />
       </form>
     </div>
   </div>
 </div>
 <div id="estResults" />
-{% endraw %}
+

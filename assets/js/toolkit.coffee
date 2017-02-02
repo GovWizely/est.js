@@ -18,6 +18,7 @@ class window.EST.Toolkit
 
   setup: ->
     this.setupOnStateChange()
+    this.setupOnShowResults()
     this.setupOnReset()
     this.loadPage()
 
@@ -29,23 +30,56 @@ class window.EST.Toolkit
         toolkit.stateId = state.id
         toolkit.loadPage()
 
+  setupOnShowResults: ->
+    toolkit = this
+    $('#estShowResults').on 'click', (e) ->
+      e.preventDefault()
+      toolkit.pushNextPage()
+
   setupOnReset: ->
     toolkit = this
     $('#estReset').on 'click', (e) ->
       e.preventDefault()
-      filter.setSelectedId({}) for filter in toolkit.filters
-      History.pushState null, 'Environmental Solutions Toolkit', "#{toolkit.pathname}"
+      toolkit.reset()
 
-  pushNextPage: ->
-    selectedParams = this.getSelectedFilters()
-    paramString = $.param selectedParams
-    History.pushState null, 'Environmental Solutions Toolkit', "#{@pathname}?#{paramString}"
+  reset: ->
+    toolkit = this
+    $('body').animate
+      scrollTop: $('#estForm').offset().top,
+      {
+        complete: ->
+          filter.setSelectedId({}) for filter in toolkit.filters
+          toolkit.pushNextPage({})
+      }
+
+  pushNextPage: (selectedParams) ->
+    selectedParams ?= this.getSelectedFilters()
+    if $.isEmptyObject selectedParams
+      paramString = $.param { id: (new Date()).getTime() }
+    else
+      paramString = $.param selectedParams
+
+    nextPath = "#{@pathname}?#{paramString}"
+
+    History.pushState null, 'Environmental Solutions Toolkit', nextPath
 
   loadPage: ->
     urlParams = this.paramStringToObject()
     onShowResults = true unless $.isEmptyObject urlParams
-    filter.setSelectedId(urlParams) for filter in @filters
-    this.loadFilterData onShowResults
+    filter.setSelectedId(urlParams) for filter in this.filters
+    if onShowResults
+      toolkit = this
+      this.showLoadingResults ->
+        toolkit.loadFilterData onShowResults
+    else
+      this.loadFilterData onShowResults
+
+  showLoadingResults: (complete) ->
+    @loadingResultsHtml ?= """{% include_relative templates/loading_results.html %}"""
+    $('#estResults').html @loadingResultsHtml
+    $('body').animate
+      scrollTop: $('#estResults').offset().top,
+      { complete: complete }
 
   paramStringToObject: ->
     paramStrings = window.location.search.substr(1).split('&')
@@ -61,23 +95,36 @@ class window.EST.Toolkit
 
   loadFilterData: (onShowResults) ->
     this.disable()
-    currentParams = @getSelectedFilters()
+    currentParams = this.getSelectedFilters()
     toolkit = this
 
     $.when (filter.loadData(currentParams) for filter in @filters)...
     .done ->
       if onShowResults
         toolkit.showResults()
+        toolkit.loadComplete()
+        toolkit.enable()
+        $('body').animate
+          scrollTop: $('#estResults').offset().top
       else
-        $('#estResults').hide
-          duration: toolkit.constructor.DEFAULT_EASING,
-          done: ->
-            toolkit.showDisclaimer()
-            toolkit.enable()
+        $('#estResults').empty()
+        toolkit.loadComplete()
+        $('body').animate
+          scrollTop: $('#estForm').offset().top,
+          {
+            complete: ->
+              toolkit.enable()
+          }
+
+  getOutdatedFilters: (triggerFilter) ->
+    outdatedFilters = []
+    for filter in @filters
+      outdatedFilters.push filter unless filter == triggerFilter
+    outdatedFilters
 
   disable: ->
     filter.disable() for filter in @filters
-    $('#estReset').prop('disabled', true)
+    $('#estShowResults, #estReset').prop('disabled', true)
 
   getSelectedFilters: ->
     selectedFilters = {}
@@ -86,8 +133,11 @@ class window.EST.Toolkit
     selectedFilters
 
   enable: ->
-    $('#estReset').prop('disabled', false)
     filter.enable() for filter in @filters
+    if $.isEmptyObject this.getSelectedFilters()
+      $('#estReset, #estShowResults').prop('disabled', true)
+    else
+      $('#estReset, #estShowResults').prop('disabled', false)
 
   showResults: ->
     providerIds = (provider.provider_id for provider in @filters[3].getSelectedResults()).toString()
@@ -98,7 +148,6 @@ class window.EST.Toolkit
       solution_ids: solutionIds,
       (providerSolutionUrls) ->
         toolkit.renderResults providerSolutionUrls
-        toolkit.enable()
 
   loadProviderSolutionUrls: (params, doneCallback) ->
     toolkit = this
@@ -113,9 +162,8 @@ class window.EST.Toolkit
       solutions: this.buildSolutionResults(providerSolutionUrls)
 
     resultsTemplate = """{% include_relative templates/results.html %}"""
-    html = Mustache.render resultsTemplate,
-      results
-    $('#estResults').html(html).show(@constructor.DEFAULT_EASING)
+    html = Mustache.render resultsTemplate, results
+    $('#estResults').html html
 
   buildSolutionResults: (providerSolutionUrls) ->
     urlsByProviderId = {}
@@ -128,7 +176,6 @@ class window.EST.Toolkit
     for solution in @filters[2].getSelectedResults()
       name: solution.name, urls: urlsByProviderId[solution.solution_id]
 
-  showDisclaimer: ->
-    @disclaimerContent ?= """{% include_relative templates/disclaimer.html %}"""
-    $('#estResults').html(@disclaimerContent).show(@constructor.DEFAULT_EASING)
-    this.enable()
+  loadComplete: ->
+    $('#estProgressWrapper').hide()
+    $('#estDisclaimer, #estFormWrapper, #estResults').show()
