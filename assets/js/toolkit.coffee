@@ -20,7 +20,7 @@ class window.EST.Toolkit
     this.setupOnStateChange()
     this.setupOnShowResults()
     this.setupOnReset()
-    this.loadPage()
+    this.loadPage false
 
   setupOnStateChange: ->
     toolkit = this
@@ -44,14 +44,8 @@ class window.EST.Toolkit
 
   reset: ->
     this.disable()
-    toolkit = this
-    $('body').animate
-      scrollTop: $('#estForm').offset().top,
-      {
-        complete: ->
-          filter.setSelectedId({}) for filter in toolkit.filters
-          toolkit.pushNextPage({})
-      }
+    filter.setSelectedId({}) for filter in this.filters
+    this.pushNextPage {}
 
   pushNextPage: (selectedParams) ->
     selectedParams ?= this.getSelectedFilters()
@@ -64,20 +58,31 @@ class window.EST.Toolkit
 
     History.pushState null, 'Environmental Solutions Toolkit', nextPath
 
-  loadPage: ->
+  loadPage: (isScrollEnabled = true) ->
     urlParams = this.paramStringToObject()
     onShowResults = true unless $.isEmptyObject urlParams
     filter.setSelectedId(urlParams) for filter in this.filters
     if onShowResults
       toolkit = this
-      this.showLoadingResults ->
-        toolkit.loadFilterData onShowResults
+      this.showLoadingResults isScrollEnabled, ->
+        toolkit.loadFilterData onShowResults, isScrollEnabled
     else
-      this.loadFilterData onShowResults
+      this.loadFilterData onShowResults, isScrollEnabled
 
-  showLoadingResults: (complete) ->
+  showLoadingResults: (isScrollEnabled = true, complete) ->
     @loadingResultsHtml ?= """{% include_relative templates/loading_results.html %}"""
     document.getElementById('estResults').innerHTML = @loadingResultsHtml
+    if isScrollEnabled
+      this.scrollToResults complete
+    else
+      complete.call()
+
+  scrollToForm: (complete) ->
+    $('body').animate
+      scrollTop: $('#estForm').offset().top,
+      { complete: complete }
+
+  scrollToResults: (complete) ->
     $('body').animate
       scrollTop: $('#estResults').offset().top,
       { complete: complete }
@@ -94,7 +99,7 @@ class window.EST.Toolkit
 
     currentParams
 
-  loadFilterData: (onShowResults) ->
+  loadFilterData: (onShowResults, isScrollEnabled = true) ->
     this.disable()
     currentParams = this.getSelectedFilters()
     toolkit = this
@@ -104,24 +109,16 @@ class window.EST.Toolkit
       if onShowResults
         toolkit.showResults()
         toolkit.loadComplete()
-        toolkit.enable()
-        $('body').animate
-          scrollTop: $('#estResults').offset().top
+        toolkit.enable true
+        toolkit.scrollToResults() if isScrollEnabled
       else
         document.getElementById('estResults').innerHTML = ''
         toolkit.loadComplete()
-        $('body').animate
-          scrollTop: $('#estForm').offset().top,
-          {
-            complete: ->
-              toolkit.enable()
-          }
-
-  getOutdatedFilters: (triggerFilter) ->
-    outdatedFilters = []
-    for filter in @filters
-      outdatedFilters.push filter unless filter == triggerFilter
-    outdatedFilters
+        if isScrollEnabled
+          toolkit.scrollToForm ->
+            toolkit.enable()
+        else
+          toolkit.enable()
 
   disable: ->
     filter.disable() for filter in @filters
@@ -133,10 +130,12 @@ class window.EST.Toolkit
       $.extend selectedFilters, filter.getSelectedObject()
     selectedFilters
 
-  enable: ->
+  enable: (onShowResults = false) ->
     filter.enable() for filter in @filters
     if $.isEmptyObject this.getSelectedFilters()
       $('#estReset, #estShowResults').prop('disabled', true)
+    else if onShowResults
+      $('#estReset').prop('disabled', false)
     else
       $('#estReset, #estShowResults').prop('disabled', false)
 
