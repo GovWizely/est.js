@@ -41,9 +41,10 @@ RSpec.describe 'est', type: :feature, js: true do
   context 'when selecting an issue' do
     before do
       visit '/production.html'
+      find_button 'Find Solutions', disabled: true
       page.select 'Universal Waste', from: 'Environmental Issue'
       find_field 'EPA Regulation'
-      click_button 'Find Solutions'
+      find_button('Find Solutions').click
     end
 
     it 'updates the page title and URL' do
@@ -179,17 +180,17 @@ RSpec.describe 'est', type: :feature, js: true do
     before do
       visit '/production.html?provider_ids=4'
       find :xpath, ".//div[@id='estIssues']//h4[text()='Groundwater Remediation']"
+      find_button('Clear').click
 
-      click_on 'Clear'
-      find_button 'Clear', disabled: true
       find :xpath, ".//select[@id='issuesSelect']/option[text()='Select an option']"
       find :xpath, ".//select[@id='regulationsSelect']/option[text()='Select an option']"
       find :xpath, ".//select[@id='solutionsSelect']/option[text()='Select an option']"
       find :xpath, ".//select[@id='providersSelect']/option[text()='Select an option']"
+      find_button 'Clear', disabled: true
     end
 
     it 'shows empty results' do
-      expect(find_by_id('estResults').text).to eq('')
+      find :xpath, ".//div[@id='estResults'][not(text())]"
     end
   end
 

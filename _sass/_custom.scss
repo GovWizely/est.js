@@ -81,6 +81,7 @@
     }
 
     label {
+      color: #003366;
       font-weight: 400;
     }
 
@@ -92,14 +93,18 @@
       @extend .form-control;
     }
 
-    #estShowResults {
+    #estShowResults, #estReset {
       @extend .btn;
+      height: 2.5em;
+    }
+
+    #estShowResults {
       @extend .btn-primary;
     }
 
     #estReset {
-      @extend .btn;
       @extend .btn-default;
+      margin-left: 0.5em;
     }
   }
 

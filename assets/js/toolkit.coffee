@@ -10,8 +10,8 @@ class window.EST.Toolkit
 
   constructor: (element, @options) ->
     @pathname = window.location.pathname
-    template = """{% include_relative templates/main.html %}"""
-    $(element).append template
+    html = """{% include_relative templates/main.html %}"""
+    element.innerHTML = html
     filterTypes = ['issue', 'regulation', 'solution', 'provider']
     @filters = (new window.EST.Filter(this, filterType, @options) for filterType in filterTypes)
     this.setup()
@@ -43,6 +43,7 @@ class window.EST.Toolkit
       toolkit.reset()
 
   reset: ->
+    this.disable()
     toolkit = this
     $('body').animate
       scrollTop: $('#estForm').offset().top,
@@ -76,7 +77,7 @@ class window.EST.Toolkit
 
   showLoadingResults: (complete) ->
     @loadingResultsHtml ?= """{% include_relative templates/loading_results.html %}"""
-    $('#estResults').html @loadingResultsHtml
+    document.getElementById('estResults').innerHTML = @loadingResultsHtml
     $('body').animate
       scrollTop: $('#estResults').offset().top,
       { complete: complete }
@@ -107,7 +108,7 @@ class window.EST.Toolkit
         $('body').animate
           scrollTop: $('#estResults').offset().top
       else
-        $('#estResults').empty()
+        document.getElementById('estResults').innerHTML = ''
         toolkit.loadComplete()
         $('body').animate
           scrollTop: $('#estForm').offset().top,
@@ -163,7 +164,7 @@ class window.EST.Toolkit
 
     resultsTemplate = """{% include_relative templates/results.html %}"""
     html = Mustache.render resultsTemplate, results
-    $('#estResults').html html
+    document.getElementById('estResults').innerHTML = html
 
   buildSolutionResults: (providerSolutionUrls) ->
     urlsByProviderId = {}
