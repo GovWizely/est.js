@@ -7,6 +7,7 @@
 .estContent {
   @import "custom_bootstrap";
 
+  $font-family: 'Lato', sans-serif;
   $est-content-font-weight: 300;
 
   // Body reset
@@ -17,7 +18,7 @@
   color: $text-color;
   background-color: $body-bg;
 
-  font-family: 'Lato', sans-serif;
+  font-family: $font-family;
   font-weight: 400;
   @extend .container-fluid;
   @include clearfix;
@@ -95,6 +96,7 @@
 
     #estShowResults, #estReset {
       @extend .btn;
+      float: none;
       height: 2.5em;
     }
 
@@ -116,6 +118,10 @@
       @extend .text-hide;
     }
 
+    h3, h4 {
+      display: block;
+    }
+
     #estSolutionsProviders {
       table {
         @extend .table;
@@ -126,6 +132,7 @@
         > thead, > tbody {
           > tr {
             > th, > td {
+              font-family: $font-family;
               padding-left: 0;
               padding-right: 0;
               width: 50%;
