@@ -10,8 +10,8 @@ class window.EST.EndpointmeResource
 
   constructor: (options) ->
     @endpointUrl = "#{options.scheme}://#{options.host}#{options.path}"
+    @access_token = options.accessToken
     @defaultParams =
-      api_key: options.apiKey,
       size: @constructor.DEFAULT_SIZE
 
   findAll: (params, success) ->
@@ -30,6 +30,7 @@ class window.EST.EndpointmeResource
       context: this,
       type: 'GET',
       url: url,
+      headers: { 'Authorization': "Bearer #{@access_token}" }
       xhrFields:
         withCredentials: false
     .done (data) ->
