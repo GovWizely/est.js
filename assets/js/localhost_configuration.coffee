@@ -3,6 +3,6 @@
 
 jQuery ->
   $('#estContent').setupEST
-    apiKey: 'devkey',
-    scheme: 'http',
-    host: 'localhost:3000'
+    accessToken: 'access_token',
+    scheme: 'https',
+    host: 'localhost:4000'

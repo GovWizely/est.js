@@ -58,7 +58,7 @@ class window.EST.Filter
       @selectedParamsString = paramsString
 
     this.showLoading()
-    endpointmeConfig = $.extend {}, @options, path: "/v1/est_#{@filterType}s/search"
+    endpointmeConfig = $.extend {}, @options, path: "/gateway/v1/est_#{@filterType}s/search"
     resource = new window.EST.EndpointmeResource endpointmeConfig
 
     filter = this
