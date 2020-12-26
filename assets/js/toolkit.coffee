@@ -151,7 +151,7 @@ class window.EST.Toolkit
 
   loadProviderSolutionUrls: (params, doneCallback) ->
     toolkit = this
-    endpointmeConfig = $.extend {}, @options, path: '/v1/est_provider_solution_urls/search'
+    endpointmeConfig = $.extend {}, @options, path: '/gateway/v1/est_provider_solution_urls/search'
     resource = new window.EST.EndpointmeResource endpointmeConfig
     resource.findAll params, doneCallback
 
